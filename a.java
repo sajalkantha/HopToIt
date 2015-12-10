@@ -31,7 +31,9 @@ public class FollowerMode extends RaftMode {
 		    RaftResponses.clearAppendResponses(term);
 		    lastLeader = -1;
 		    //calculate random timeout
-		    ELECTION_TIMEOUT =  (int)(((double)ELECTION_TIMEOUT_MAX-(double)ELECTION_TIMEOUT_MIN)*Math.random())+ELECTION_TIMEOUT_MIN; 
+		    ELECTION_TIMEOUT =  (int)(((double)ELECTION_TIMEOUT_MAX-
+		    (double)ELECTION_TIMEOUT_MIN)*Math.random())
+		    +ELECTION_TIMEOUT_MIN; 
 		    followerTimer = this.scheduleTimer(ELECTION_TIMEOUT,mID);
 		    // cacheTimer = this.scheduleTimer(10,mID+1);
 	    }
@@ -74,7 +76,8 @@ public class FollowerMode extends RaftMode {
     			//candidateTerm > term
     			 if (lastLogTerm>mLog.getLastTerm() || lastLogIndex>=lastIndex)
     			 {
-    				//System.out.println("server "+mID+" in term "+term+" vote to server "+candidateID);
+    				//System.out.println("server "+mID+" in term "+term+"
+    				vote to server "+candidateID);
     				mConfig.setCurrentTerm(candidateTerm, candidateID); 
     				RaftResponses.setTerm(candidateTerm);
 				vote = 0;
@@ -156,7 +159,8 @@ public class FollowerMode extends RaftMode {
 				    //RaftResponses.clearAppendResponses(term);
 				    remoteAppendEntries(lastLeader, term, lastLeader, 0,0, content, 0);
 				    //check response
-				    //if (RaftResponses.getAppendResponses(term)[lastLeader] == 0)  //successful append, otherwise send next time
+				    //if (RaftResponses.getAppendResponses(term)[lastLeader] == 0)  
+				    //successful append, otherwise send next time
 				    //  {
 				    localCache.clear();
 				    //   RaftResponses.setAppendResponse(lastLeader, -1, term);
@@ -182,14 +186,17 @@ public class FollowerMode extends RaftMode {
 				else  //append from somewhere, check
 				{
         	        	Entry testEntry = mLog.getEntry(prevLogIndex);
-        	        	if (testEntry != null && testEntry.term == prevLogTerm) //same index, same term, should append
+        	        	if (testEntry != null && testEntry.term == prevLogTerm) //same index,
+        	        	//same term, should append
         	        	{
         	        		mLog.insert(entries, prevLogIndex, prevLogTerm);
         	        		result = 0;
         	        		if (leaderCommit>mCommitIndex)
       					  	{
-        	        			mCommitIndex = Math.min(leaderCommit, mLog.getLastIndex());
-      					      	mLastApplied = Math.max(mLastApplied, mCommitIndex);
+        	        			mCommitIndex = Math.min(leaderCommit,
+        	        			mLog.getLastIndex());
+      					      	mLastApplied = Math.max(mLastApplied,
+      					      	mCommitIndex);
       					  	}
         	        		//System.out.println("insert successful");
         	        	}
@@ -230,7 +237,8 @@ public class FollowerMode extends RaftMode {
           localCache.toArray(content);
           this.remoteAppendEntries(lastLeader, 0, lastLeader, 0,0, content, 0);
 	  //check response
-          if (RaftResponses.getAppendResponses(term)[lastLeader] == 0)  //successful append, otherwise send next time
+          if (RaftResponses.getAppendResponses(term)[lastLeader] == 0)  
+          //successful append, otherwise send next time
           {
         	  localCache.clear();
               RaftResponses.setAppendResponse(lastLeader, -1, term);
